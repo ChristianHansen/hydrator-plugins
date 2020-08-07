@@ -418,7 +418,7 @@ public class CSVParserTest {
   }
 
   @Test
-  public void test4180RFC() throws Exception {
+  public void testRfc4180() throws Exception {
     CSVParser.Config config = new CSVParser.Config("rfc4180", null, "body", OUTPUT1.toString());
     Transform<StructuredRecord, StructuredRecord> transform = new CSVParser(config);
     transform.initialize(null);
