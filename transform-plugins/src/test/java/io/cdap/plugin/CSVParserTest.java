@@ -416,4 +416,22 @@ public class CSVParserTest {
     Assert.assertEquals("offset", 1, invalidEntry.getInvalidRecord().<Integer>get("offset").intValue());
     Assert.assertEquals("body", "0,\"020\"1,\"BS:12345  ORDER:111\"4", invalidEntry.getInvalidRecord().get("body"));
   }
+
+  @Test
+  public void test4180RFC() throws Exception {
+    CSVParser.Config config = new CSVParser.Config("rfc4180", null, "body", OUTPUT1.toString());
+    Transform<StructuredRecord, StructuredRecord> transform = new CSVParser(config);
+    transform.initialize(null);
+
+    MockEmitter<StructuredRecord> emitter = new MockEmitter<>();
+    StructuredRecord inputRecord = StructuredRecord.builder(INPUT1)
+        .set("body", "unquoted,\"quoted\",1234,string with spaces,\"quoted, with comma\"")
+        .build();
+    transform.transform(inputRecord, emitter);
+    Assert.assertEquals("unquoted", emitter.getEmitted().get(0).get("a"));
+    Assert.assertEquals("quoted", emitter.getEmitted().get(0).get("b"));
+    Assert.assertEquals("1234", emitter.getEmitted().get(0).get("c"));
+    Assert.assertEquals("string with spaces", emitter.getEmitted().get(0).get("d"));
+    Assert.assertEquals("quoted, with comma", emitter.getEmitted().get(0).get("e"));
+  }
 }
